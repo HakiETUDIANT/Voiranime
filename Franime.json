@@ -1,18 +1,18 @@
 {
-    "sourceName": "Franime",
-    "iconUrl": "https://i.ibb.co/60mLsTNN/your-icon.png",
-    "author": {
-        "name": "HakiETUDIANT",
-        "icon": "https://i.ibb.co/60mLsTNN/your-icon.png"
-    },
-    "version": "1.0.0",
-    "language": "French",
-    "streamType": "HLS",
-    "quality": "720p",
-    "baseUrl": "https://franime.fr/",
-    "searchBaseUrl": "https://franime.fr/recherche?search=%s&type=TOUT&format=TOUT&status=TOUT&ordre=Ressemblance&themes=TOUT&algorithme=Normal&page=0",
-    "scriptUrl": "https://raw.githubusercontent.com/HakiETUDIANT/Voiranime/main/franime.js",
-    "asyncJS": false,
-    "streamAsyncJS": false,
-    "softsub": true
+   "sourceName": "Franime",
+   "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://franime.fr&size=16",
+   "author": {
+       "name": "HakiETUDIANT",
+       "icon": "https://ibb.co/60mLsTNN"
+   },
+   "version": "1.0.0",
+   "language": "French (VO)",
+   "streamType": "HLS",
+   "quality": "720p",
+   "baseUrl": "https://franime.fr/",
+   "searchBaseUrl": "https://franime.fr/recherche?search=%s&type=TOUT&format=TOUT&status=TOUT&ordre=Ressemblance&themes=TOUT&algorithme=Normal&page=0",
+   "scriptUrl": "https://raw.githubusercontent.com/HakiETUDIANT/Voiranime/main/Franime.js",
+   "asyncJS": false,
+   "streamAsyncJS": false,
+   "softsub": true
 }
