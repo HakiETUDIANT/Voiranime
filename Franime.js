@@ -10,15 +10,16 @@ function searchResults(html) {
     const baseUrl = "https://franime.fr/";
 
     // Utilisation d'une expression régulière pour extraire les éléments d'anime sur la page de recherche
-    const filmListRegex = /<div class="post-item"[\s\S]*?<\/div>/g;
+    const filmListRegex = /<div class="col-6 col-md-4 col-xl-3 d-flex align-items-stretch flex-column">[\s\S]*?<\/div>/g;
     const items = html.match(filmListRegex) || [];
 
     items.forEach((itemHtml) => {
-        const titleMatch = itemHtml.match(/<a class="title" href="([^"]+)">([^<]+)<\/a>/);
+        const titleMatch = itemHtml.match(/<a class="post-title" href="([^"]+)">([^<]+)<\/a>/);
         const href = titleMatch ? titleMatch[1] : '';
         let title = titleMatch ? titleMatch[2] : '';  
         title = cleanTitle(title);
-        const imgMatch = itemHtml.match(/<img[^>]*class="lazy"[^>]*src="([^"]+)"[^>]*>/);
+        
+        const imgMatch = itemHtml.match(/<img[^>]*class="lazyload"[^>]*data-src="([^"]+)"[^>]*>/);
         const imageUrl = imgMatch ? imgMatch[1] : '';
 
         if (title && href) {
