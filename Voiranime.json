@@ -1,0 +1,18 @@
+{
+   "sourceName": "VoirAnime",
+   "iconUrl": "https://v6.voiranime.com/favicon.ico",
+   "author": {
+       "name": "Haki",
+       "icon": "https://v6.voiranime.com/favicon.ico"
+   },
+   "version": "1.0.0",
+   "language": "Français",
+   "streamType": "HLS",
+   "quality": "720p",
+   "baseUrl": "https://v6.voiranime.com/",
+   "searchBaseUrl": "https://v6.voiranime.com/?s=%s",
+   "scriptUrl": "https://raw.githubusercontent.com/TonUser/sora-modules/main/voiranime.js",
+   "asyncJS": true,
+   "streamAsyncJS": true,
+   "softsub": true
+}
