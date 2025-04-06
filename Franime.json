@@ -1,18 +1,23 @@
 {
-   "sourceName": "Franime",
-   "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://franime.fr&size=16",
-   "author": {
-       "name": "HakiETUDIANT",
-       "icon": "https://ibb.co/60mLsTNN"
-   },
-   "version": "1.0.0",
-   "language": "French (VO)",
-   "streamType": "HLS",
-   "quality": "720p",
-   "baseUrl": "https://franime.fr/",
-   "searchBaseUrl": "https://franime.fr/recherche?search=%s&type=TOUT&format=TOUT&status=TOUT&ordre=Ressemblance&themes=TOUT&algorithme=Normal&page=0",
-   "scriptUrl": "https://raw.githubusercontent.com/HakiETUDIANT/Voiranime/main/Franime.js",
-   "asyncJS": false,
-   "streamAsyncJS": false,
-   "softsub": true
+    "name": "Franime",
+    "host": "https://franime.fr",
+    "icon": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://franime.fr&size=16",
+    "search": {
+        "url": "https://franime.fr/recherche?search={{query}}&type=TOUT&format=TOUT&status=TOUT&ordre=Ressemblance&themes=TOUT&algorithme=Normal&page=0",
+        "method": "GET",
+        "headers": {},
+        "json": true
+    },
+    "episodes": {
+        "url": "https://franime.fr/animee/{{anime}}?s={{season}}&ep={{episode}}&lang=vo",
+        "method": "GET",
+        "headers": {},
+        "json": true
+    },
+    "anime": {
+        "url": "https://franime.fr/animee/{{anime}}",
+        "method": "GET",
+        "headers": {},
+        "json": true
+    }
 }
