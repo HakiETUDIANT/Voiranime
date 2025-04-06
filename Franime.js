@@ -1,34 +1,22 @@
-function cleanTitle(title) {
-    return title
-        .replace(/&#8217;/g, "'")  
-        .replace(/&#8211;/g, "-")  
-        .replace(/&#[0-9]+;/g, ""); 
-}
-
 function searchResults(html) {
     const results = [];
-    const baseUrl = "https://franime.fr/";
+    
+    // Mise à jour du regex pour capturer les <a> avec les liens et titres d'anime
+    const searchResultsRegex = /<a href="([^"]+)"[^>]*class=".*?">([\s\S]*?)<\/a>/g; 
+    const items = html.match(searchResultsRegex) || [];
 
-    // Expression régulière pour extraire les cartes d'anime sur la page de recherche
-    const filmListRegex = /<div class="anime-card">[\s\S]*?<\/div>/g;
-    const items = html.match(filmListRegex) || [];
+    items.forEach((itemHtml, index) => {
+        // Extraire l'URL et le titre depuis le lien <a>
+        const hrefMatch = itemHtml.match(/href="([^"]+)"/);
+        const titleMatch = itemHtml.match(/>(.*?)<\/a>/);
 
-    items.forEach((itemHtml) => {
-        // Extraire le titre et l'URL de l'anime
-        const titleMatch = itemHtml.match(/<a class="post-title" href="([^"]+)">([^<]+)<\/a>/);
-        const href = titleMatch ? titleMatch[1] : '';
-        let title = titleMatch ? titleMatch[2] : '';  
-        title = cleanTitle(title);
-
-        // Extraire l'image de couverture
-        const imgMatch = itemHtml.match(/<img[^>]*class="lazyload"[^>]*data-src="([^"]+)"[^>]*>/);
-        const imageUrl = imgMatch ? imgMatch[1] : '';
+        const href = hrefMatch ? hrefMatch[1] : '';
+        const title = titleMatch ? titleMatch[1].trim() : '';
 
         if (title && href) {
             results.push({
-                title: title.trim(),
-                image: imageUrl.trim(),
-                href: href.trim()
+                title: title,
+                href: href
             });
         }
     });
@@ -38,54 +26,42 @@ function searchResults(html) {
 
 function extractDetails(html) {
     const details = [];
-
-    // Extraire la description
+    
+    // Extraire la description de l'anime
     const descriptionMatch = html.match(/<div class="description">([\s\S]*?)<\/div>/);
-    let description = descriptionMatch ? descriptionMatch[1].trim() : '';
+    let description = descriptionMatch ? descriptionMatch[1].trim() : 'N/A';
 
-    // Extraire les synonymes (alias)
-    const aliasesMatch = html.match(/<div class="synonyms">([\s\S]*?)<\/div>/);
+    // Extraire le titre alternatif
+    const aliasesMatch = html.match(/<h1 class="anime-title">([\s\S]*?)<\/h1>/);
     let aliases = aliasesMatch ? aliasesMatch[1].trim() : 'N/A';
 
-    // Extraire l'année de diffusion (saison)
-    const airdateMatch = html.match(/<div class="season">Saison: ([\s\S]*?)<\/div>/);
-    let airdate = airdateMatch ? airdateMatch[1].trim() : 'N/A';
+    // Extraire la date de diffusion
+    const airdateMatch = html.match(/<div class="airdate">[\s\S]*?(\d{4})[\s\S]*?<\/div>/);
+    let airdate = airdateMatch ? airdateMatch[1] : 'N/A';
 
-    if (description && airdate) {
-        details.push({
-            description: description,
-            aliases: aliases || 'N/A',
-            airdate: airdate
-        });
-    }
+    details.push({
+        description: description,
+        aliases: aliases,
+        airdate: airdate
+    });
 
     return details;
 }
 
 function extractEpisodes(html) {
     const episodes = [];
-    const baseUrl = "https://franime.fr/";
-
-    // Expression régulière pour extraire les liens des épisodes
-    const episodeLinks = html.match(/<a class="episode-link"[^>]*href="([^"]+)"[^>]*>\s*<div class="episode-number">(\d+)<\/div>/g);
-
-    if (!episodeLinks) {
-        return episodes;
-    }
-
+    
+    // Regex pour extraire les épisodes de l'HTML
+    const episodeLinks = html.match(/<a href="([^"]+)"[^>]*class="episode-link">[\s\S]*?<div class="episode-number">(\d+)<\/div>/g);
+    
     episodeLinks.forEach(link => {
         const hrefMatch = link.match(/href="([^"]+)"/);
         const numberMatch = link.match(/<div class="episode-number">(\d+)<\/div>/);
 
-        if (hrefMatch && numberMatch) {
-            let href = hrefMatch[1];
-            const number = numberMatch[1];
+        const href = hrefMatch ? hrefMatch[1] : '';
+        const number = numberMatch ? numberMatch[1] : '';
 
-            // Construction de l'URL complète pour chaque épisode
-            if (!href.startsWith("https")) {
-                href = href.startsWith("/") ? baseUrl + href.slice(1) : baseUrl + href;
-            }
-
+        if (href && number) {
             episodes.push({
                 href: href,
                 number: number
@@ -93,14 +69,10 @@ function extractEpisodes(html) {
         }
     });
 
-    // Tri des épisodes dans l'ordre croissant
-    episodes.reverse();
-    return episodes;
+    return episodes.reverse();
 }
 
 function extractStreamUrl(html) {
-    // Extraire le lien de la vidéo depuis la page de l'épisode
-    const sourceRegex = /<source[^>]+src="([^"]+)"/;
-    const match = html.match(sourceRegex);
-    return match ? match[1] : null;
+    const streamUrlMatch = html.match(/<source[^>]+src="([^"]+)"/);
+    return streamUrlMatch ? streamUrlMatch[1] : null;
 }
