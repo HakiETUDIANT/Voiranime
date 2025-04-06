@@ -1,23 +1,20 @@
 {
     "name": "Franime",
     "host": "https://franime.fr",
-    "icon": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://franime.fr&size=16",
+    "icon": "https://ibb.co/60mLsTNN",
     "search": {
         "url": "https://franime.fr/recherche?search={{query}}&type=TOUT&format=TOUT&status=TOUT&ordre=Ressemblance&themes=TOUT&algorithme=Normal&page=0",
         "method": "GET",
-        "headers": {},
-        "json": true
-    },
-    "episodes": {
-        "url": "https://franime.fr/animee/{{anime}}?s={{season}}&ep={{episode}}&lang=vo",
-        "method": "GET",
-        "headers": {},
-        "json": true
+        "headers": {}
     },
     "anime": {
-        "url": "https://franime.fr/animee/{{anime}}",
+        "url": "https://franime.fr/animee/{{id}}",
         "method": "GET",
-        "headers": {},
-        "json": true
+        "headers": {}
+    },
+    "episodes": {
+        "url": "https://franime.fr/animee/{{id}}?s={{season}}&ep={{episode}}&lang=vo",
+        "method": "GET",
+        "headers": {}
     }
 }
