@@ -12,7 +12,7 @@
     "baseUrl": "https://franime.fr/",
     "searchBaseUrl": "https://franime.fr/recherche?search=%s&type=TOUT&format=TOUT&status=TOUT&ordre=Ressemblance&themes=TOUT&algorithme=Normal&page=0",
     "scriptUrl": "https://raw.githubusercontent.com/HakiETUDIANT/Voiranime/main/franime.js",
-    "asyncJS": true,
+    "asyncJS": false,
     "streamAsyncJS": false,
     "softsub": true
 }
