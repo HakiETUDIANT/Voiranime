@@ -2,17 +2,17 @@
    "sourceName": "FrAnime",
    "iconUrl": "https://franime.fr/favicon.ico",
    "author": {
-       "name": "Haki",
+       "name": "HakiETUDIANT",
        "icon": "https://franime.fr/favicon.ico"
    },
    "version": "1.0.0",
-   "language": "Français",
+   "language": "French (FR)",
    "streamType": "HLS",
    "quality": "720p",
    "baseUrl": "https://franime.fr/",
    "searchBaseUrl": "https://franime.fr/recherche?search=%s&type=TOUT&format=TOUT&status=TOUT&ordre=Ressemblance&themes=TOUT&algorithme=Normal&page=0",
    "scriptUrl": "https://raw.githubusercontent.com/HakiETUDIANT/Voiranime/main/franime.js",
    "asyncJS": true,
-   "streamAsyncJS": true,
+   "streamAsyncJS": false,
    "softsub": true
 }
