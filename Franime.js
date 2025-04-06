@@ -8,15 +8,15 @@ function cleanTitle(title) {
 // Fonction pour extraire les résultats de recherche
 function searchResults(html) {
     const results = [];
-    const regex = /<div class="anime-item">[\s\S]*?<a href="([^"]+)">([^<]+)<\/a>/g;
+    const regex = /<div class="anime-item">[\s\S]*?<a href="([^"]+)">[\s\S]*?<h3>([^<]+)<\/h3>/g;
     let match;
 
     while ((match = regex.exec(html)) !== null) {
-        const href = match[1];
-        const title = match[2];
+        const href = match[1]; // L'URL de l'anime
+        const title = match[2]; // Le titre de l'anime
         results.push({
             title: cleanTitle(title).trim(),
-            href: href.trim()
+            href: "https://franime.fr" + href.trim() // Ajouter le domaine principal pour que le lien soit complet
         });
     }
 
