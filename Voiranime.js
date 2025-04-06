@@ -1,25 +1,31 @@
 function cleanTitle(title) {
     return title
-        .replace(/&#8217;/g, "'")  
-        .replace(/&#8211;/g, "-")  
-        .replace(/&#[0-9]+;/g, "") 
-        .trim();
+        .replace(/&#8217;/g, "'")
+        .replace(/&#8211;/g, "-")
+        .replace(/&#[0-9]+;/g, "");
 }
 
 function searchResults(html) {
     const results = [];
-    const items = html.match(/<div class="animation-2 items.*?<\/div>\s*<\/div>/gs) || [];
+    const baseUrl = "https://franime.fr/";
 
-    items.forEach((item) => {
-        const titleMatch = item.match(/<h2><a[^>]*>(.*?)<\/a><\/h2>/);
-        const hrefMatch = item.match(/<a href="(https:\/\/v6\.voiranime\.com\/[^"]+)"/);
-        const imageMatch = item.match(/<img[^>]+src="([^"]+)"[^>]*>/);
+    // Modification de l'expression régulière pour trouver les animes dans les résultats de recherche
+    const filmListRegex = /<div class="post-item"[\s\S]*?<\/div>/g;
+    const items = html.match(filmListRegex) || [];
 
-        if (titleMatch && hrefMatch && imageMatch) {
+    items.forEach((itemHtml) => {
+        const titleMatch = itemHtml.match(/<a class="title" href="([^"]+)">([^<]+)<\/a>/);
+        const href = titleMatch ? titleMatch[1] : '';
+        let title = titleMatch ? titleMatch[2] : '';  
+        title = cleanTitle(title);
+        const imgMatch = itemHtml.match(/<img[^>]*class="lazy"[^>]*src="([^"]+)"[^>]*>/);
+        const imageUrl = imgMatch ? imgMatch[1] : '';
+
+        if (title && href) {
             results.push({
-                title: cleanTitle(titleMatch[1]),
-                href: hrefMatch[1],
-                image: imageMatch[1]
+                title: title.trim(),
+                image: imageUrl.trim(),
+                href: href.trim()
             });
         }
     });
@@ -28,40 +34,62 @@ function searchResults(html) {
 }
 
 function extractDetails(html) {
-    const descriptionMatch = html.match(/<p style="text-align: justify;">(.*?)<\/p>/);
-    const aliasesMatch = html.match(/Alias(?:es)?:<\/strong>\s*([^<]+)/);
-    const airdateMatch = html.match(/Année:\s*<\/strong>\s*(\d{4})/);
+    const details = [];
 
-    return {
-        description: descriptionMatch ? descriptionMatch[1].trim() : "Aucune description",
-        aliases: aliasesMatch ? aliasesMatch[1].trim() : "N/A",
-        airdate: airdateMatch ? airdateMatch[1].trim() : "N/A"
-    };
+    // Extraction de la description de l'anime
+    const descriptionMatch = html.match(/<div class="post-content">([\s\S]*?)<\/div>/);
+    let description = descriptionMatch ? descriptionMatch[1] : '';
+
+    // Extraction des alias (si disponible)
+    const aliasesMatch = html.match(/<h1 class="post-title" itemprop="name">([^<]+)<\/h1>/);
+    let aliases = aliasesMatch ? aliasesMatch[1] : '';
+
+    // Extraction de l'année de sortie
+    const airdateMatch = html.match(/<div class="post-meta"><span>Année :<\/span>\s*([^<]+)<\/div>/);
+    let airdate = airdateMatch ? airdateMatch[1] : '';
+
+    if (description && airdate) {
+        details.push({
+            description: description,
+            aliases: aliases || 'N/A',
+            airdate: airdate
+        });
+    }
+
+    return details;
 }
 
 function extractEpisodes(html) {
     const episodes = [];
-    const matches = html.match(/<li class="wp-manga-chapter[^>]*>[\s\S]*?<\/li>/g) || [];
+    const baseUrl = "https://franime.fr/";
 
-    matches.forEach(match => {
-        const hrefMatch = match.match(/href="([^"]+)"/);
-        const numMatch = match.match(/>([^<]+)<\/a>/);
+    // Extraction des épisodes
+    const episodeLinks = html.match(/<a class="episode-link"[^>]*href="([^"]+)"/g);
+    if (!episodeLinks) {
+        return episodes;
+    }
 
-        if (hrefMatch && numMatch) {
-            const href = hrefMatch[1];
-            const number = numMatch[1].replace(/[^\d]/g, '');
-            episodes.push({ href, number });
+    episodeLinks.forEach(link => {
+        const hrefMatch = link.match(/href="([^"]+)"/);
+
+        if (hrefMatch) {
+            let href = hrefMatch[1];
+            if (!href.startsWith("https")) {
+                href = href.startsWith("/") ? baseUrl + href.slice(1) : baseUrl + href;
+            }
+
+            episodes.push({
+                href: href,
+                number: episodes.length + 1
+            });
         }
     });
 
-    episodes.reverse(); // Pour avoir l'épisode 1 en premier
-    return episodes;
+    return episodes.reverse();
 }
 
 function extractStreamUrl(html) {
-    const iframeMatch = html.match(/<iframe[^>]+src="([^"]+)"[^>]*>/);
-    if (!iframeMatch) return null;
-
-    const iframeUrl = iframeMatch[1];
-    return iframeUrl.startsWith("http") ? iframeUrl : `https:${iframeUrl}`;
+    const sourceRegex = /<source[^>]+src="([^"]+)"/;
+    const match = html.match(sourceRegex);
+    return match ? match[1] : null;
 }
