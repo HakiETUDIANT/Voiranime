@@ -1,20 +1,18 @@
 {
-    "name": "Franime",
-    "host": "https://franime.fr",
-    "icon": "https://ibb.co/60mLsTNN",
-    "search": {
-        "url": "https://franime.fr/recherche?search={{query}}&type=TOUT&format=TOUT&status=TOUT&ordre=Ressemblance&themes=TOUT&algorithme=Normal&page=0",
-        "method": "GET",
-        "headers": {}
-    },
-    "anime": {
-        "url": "https://franime.fr/animee/{{id}}",
-        "method": "GET",
-        "headers": {}
-    },
-    "episodes": {
-        "url": "https://franime.fr/animee/{{id}}?s={{season}}&ep={{episode}}&lang=vo",
-        "method": "GET",
-        "headers": {}
-    }
+   "sourceName": "FrAnime",
+   "iconUrl": "https://franime.fr/favicon.ico",
+   "author": {
+       "name": "HakiETUDIANT",
+       "icon": "https://franime.fr/favicon.ico"
+   },
+   "version": "1.0.0",
+   "language": "French (FR)",
+   "streamType": "HLS",
+   "quality": "720p",
+   "baseUrl": "https://franime.fr/",
+   "searchBaseUrl": "https://franime.fr/recherche?search=%s&type=TOUT&format=TOUT&status=TOUT&ordre=Ressemblance&themes=TOUT&algorithme=Normal&page=0",
+   "scriptUrl": "https://raw.githubusercontent.com/HakiETUDIANT/Voiranime/main/franime.js",
+   "asyncJS": true,
+   "streamAsyncJS": false,
+   "softsub": true
 }
