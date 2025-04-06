@@ -1,86 +1,76 @@
-function cleanTitle(title) {
-    return title
-        .replace(/&#8217;/g, "'")  
-        .replace(/&#8211;/g, "-")  
-        .replace(/&#[0-9]+;/g, ""); 
+// Fonction pour afficher les résultats dans le DOM
+function displayResults(animeList) {
+  const resultsContainer = document.getElementById('anime-results');
+  resultsContainer.innerHTML = '';  // Vide les résultats précédents
+
+  // Vérifier s'il y a des résultats
+  if (animeList.length === 0) {
+    resultsContainer.innerHTML = "<p>Aucun anime trouvé.</p>";
+    return;
+  }
+
+  // Pour chaque anime de la liste, créer et ajouter un élément HTML
+  animeList.forEach(anime => {
+    const animeElement = document.createElement('div');
+    animeElement.classList.add('anime-item');
+
+    // Créer un titre
+    const titleElement = document.createElement('h3');
+    titleElement.textContent = anime.title;
+
+    // Créer une description
+    const descriptionElement = document.createElement('p');
+    descriptionElement.textContent = anime.description || "Pas de description disponible.";
+
+    // Créer un lien vers la source
+    const linkElement = document.createElement('a');
+    linkElement.href = anime.source_url;
+    linkElement.target = "_blank";
+    linkElement.textContent = 'Voir plus';
+
+    // Créer une image pour l'affiche de l'anime
+    const imageElement = document.createElement('img');
+    imageElement.src = anime.affiche;
+    imageElement.alt = anime.title;
+    imageElement.width = 150;  // Optionnel, ajuste la taille de l'image
+
+    // Créer un élément pour la note
+    const ratingElement = document.createElement('p');
+    ratingElement.textContent = `Note: ${anime.note || "N/A"}`;
+
+    // Ajouter tous les éléments à l'élément anime
+    animeElement.appendChild(titleElement);
+    animeElement.appendChild(descriptionElement);
+    animeElement.appendChild(ratingElement);
+    animeElement.appendChild(linkElement);
+    animeElement.appendChild(imageElement);
+
+    // Ajouter l'élément anime à la page
+    resultsContainer.appendChild(animeElement);
+  });
 }
 
-// Fonction pour extraire les résultats de recherche
-function searchResults(html) {
-    const results = [];
-    const regex = /<div class="anime-item">[\s\S]*?<a href="([^"]+)">[\s\S]*?<h3>([^<]+)<\/h3>/g;
-    let match;
+// Fonction pour effectuer une recherche d'anime
+function searchAnime() {
+  const query = document.getElementById('search-query').value.trim();  // Récupérer la requête de recherche
 
-    while ((match = regex.exec(html)) !== null) {
-        const href = match[1]; // L'URL de l'anime
-        const title = match[2]; // Le titre de l'anime
-        results.push({
-            title: cleanTitle(title).trim(),
-            href: "https://franime.fr" + href.trim() // Ajouter le domaine principal pour que le lien soit complet
-        });
-    }
+  if (!query) {
+    alert("Veuillez entrer un terme de recherche.");
+    return;
+  }
 
-    return results;
-}
+  // URL de l'API de recherche, ajuste-la si nécessaire
+  const apiUrl = `https://kitsu.app/api/edge/anime?filter[text]=${encodeURIComponent(query)}`;
 
-// Fonction pour extraire les détails de l'anime
-function extractDetails(html) {
-    const details = [];
-
-    const descriptionMatch = html.match(/<div class="infodes2 entry-content entry-content-single" itemprop="description">[\s\S]*?<p>([\s\S]*?)<\/p>/);
-    let description = descriptionMatch ? descriptionMatch[1] : '';
-
-    const aliasesMatch = html.match(/<h1 class="entry-title" itemprop="name"[^>]*>([^<]+)<\/h1>/);
-    let aliases = aliasesMatch ? aliasesMatch[1] : '';
-
-    const airdateMatch = html.match(/<div class="textd">Year:<\/div>\s*<div class="textc">([^<]+)<\/div>/);
-    let airdate = airdateMatch ? airdateMatch[1] : '';
-
-    details.push({
-        description: description || 'No description available.',
-        aliases: aliases || 'N/A',
-        airdate: airdate || 'Unknown'
+  // Requête vers l'API pour obtenir les résultats
+  fetch(apiUrl)
+    .then(response => response.json())
+    .then(data => {
+      const animeList = data.data || [];  // Assurez-vous que les données existent
+      displayResults(animeList);
+    })
+    .catch(error => {
+      console.error('Erreur lors de la récupération des données:', error);
+      alert('Une erreur est survenue. Veuillez réessayer plus tard.');
     });
-
-    return details;
-}
-
-// Fonction pour extraire les épisodes d'une série
-function extractEpisodes(html) {
-    const episodes = [];
-    const baseUrl = "https://franime.fr/";
-
-    const episodeLinks = html.match(/<a class="infovan"[^>]*href="([^"]+)"[\s\S]*?<div class="centerv">(\d+)<\/div>/g);
-    
-    if (!episodeLinks) {
-        return episodes;
-    }
-
-    episodeLinks.forEach(link => {
-        const hrefMatch = link.match(/href="([^"]+)"/);
-        const numberMatch = link.match(/<div class="centerv">(\d+)<\/div>/);
-
-        if (hrefMatch && numberMatch) {
-            let href = hrefMatch[1];
-            const number = numberMatch[1];
-
-            if (!href.startsWith("https")) {
-                href = href.startsWith("/") ? baseUrl + href.slice(1) : baseUrl + href;
-            }
-
-            episodes.push({
-                href: href,
-                number: number
-            });
-        }
-    });
-    episodes.reverse();
-    return episodes;
-}
-
-// Fonction pour extraire l'URL de stream
-function extractStreamUrl(html) {
-    const sourceRegex = /<source[^>]+id="iframevideo"[^>]+src="([^"]+)"/;
-    const match = html.match(sourceRegex);
-    return match ? match[1] : null;
 }
